@@ -15,11 +15,15 @@
     </bean>
 
     <!-- 拦截器 -->
-    <!--<mvc:interceptors>
+    <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**" />
-            <bean class="com.zxw.interceptor.mvc.UserInterceptor"></bean>
+            <bean class="cn.yidukeji.interceptor.AuthInterceptor"></bean>
         </mvc:interceptor>
-    </mvc:interceptors>-->
+    </mvc:interceptors>
+
+    <bean id="exceptionResolver" class="cn.yidukeji.exception.ApiExceptionResolver">
+        <property name="order" value="1" />
+    </bean>
 
 </beans>

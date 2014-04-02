@@ -1,6 +1,7 @@
 package cn.yidukeji.controller;
 
 import cn.yidukeji.bean.Test;
+import cn.yidukeji.utils.RestResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,12 +18,12 @@ public class TestController {
 
     @RequestMapping("/test")
     @ResponseBody
-    public Test test(){
+    public RestResult test(){
         Test t = new Test();
         t.setT1("111111");
         t.setT2("222222");
         System.out.println("ssssss");
-        return t;
+        return RestResult.SUCCESS().put("test", t);
     }
 
 }
