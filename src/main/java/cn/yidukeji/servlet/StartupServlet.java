@@ -1,5 +1,6 @@
 package cn.yidukeji.servlet;
 
+import cn.yidukeji.utils.AccessUserHolder;
 import cn.yidukeji.utils.SpringContext;
 import org.apache.log4j.Logger;
 import org.springframework.web.context.WebApplicationContext;
@@ -21,6 +22,7 @@ public class StartupServlet extends DispatcherServlet {
     protected WebApplicationContext initWebApplicationContext() {
         WebApplicationContext ac = super.initWebApplicationContext();
         SpringContext.setApplicationContext(ac);
+        AccessUserHolder.resetAccessUser();
         return ac;
     }
 

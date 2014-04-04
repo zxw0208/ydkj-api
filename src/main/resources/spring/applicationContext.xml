@@ -29,8 +29,8 @@
     </bean>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="configLocation" value="classpath:ibatis/ibatis-config.xml"></property>
         <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath:mybatis/mappers/**/*.xml" />
     </bean>
 
     <!-- scan for mappers and let them be autowired -->

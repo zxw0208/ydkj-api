@@ -35,8 +35,8 @@ public class TestControllerTest {
         DefaultHttpClient hc = new DefaultHttpClient();
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
-        formparams.add(new BasicNameValuePair("expires", "1396425013"));
-        String signature = HMACUtils.sha265("2014", "accessKeyId=aaa&expires=1396425013");
+        formparams.add(new BasicNameValuePair("expires", "1396582836"));
+        String signature = HMACUtils.sha265("2014", "accessKeyId=aaa&expires=1396582836");
         formparams.add(new BasicNameValuePair("signature", signature));
         HttpGet post = new HttpGet("http://localhost:8080/ydkj/test?" + URLEncodedUtils.format(formparams, HTTP.UTF_8));
         HttpResponse response = hc.execute(targetHost, post);

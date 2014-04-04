@@ -1,6 +1,10 @@
 package cn.yidukeji.utils;
 
+import cn.yidukeji.bean.AccessUser;
+import cn.yidukeji.service.AccessUserService;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,10 +16,19 @@ import java.util.Map;
  */
 public class AccessUserHolder {
 
-    public Map<String, String> map = new HashMap<String, String>();
+    public static Map<String, AccessUser> map = new HashMap<String, AccessUser>();
 
-    public static String getSecretKey(String accessKeyId){
-        return "2014";
+    public static AccessUser getAccessUser(String accessKeyId){
+        return map.get(accessKeyId);
+    }
+
+    public static void resetAccessUser() {
+        map.clear();
+        AccessUserService accessUserService = SpringContext.getApplicationContext().getBean(AccessUserService.class);
+        List<AccessUser> list = accessUserService.getAccessUserList();
+        for(AccessUser user : list){
+            map.put(user.getAccessKeyId(), user);
+        }
     }
 
 }

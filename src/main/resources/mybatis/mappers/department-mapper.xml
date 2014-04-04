@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.yidukeji.persistence.DepartmentMapper">
+
+    <resultMap id="departmentMap" type="cn.yidukeji.bean.Department">
+        <id property="id" column="id" />
+        <result property="companyId" column="company_id" />
+        <result property="parentId" column="parent_id" />
+        <result property="name" column="name" />
+        <result property="description" column="description" />
+        <result property="ctime" column="ctime" />
+    </resultMap>
+
+    <select id="findDepartmentList" resultMap="departmentMap">
+        select * from department where company_id = #{companyId}
+    </select>
+
+    <insert id="insertDepartment" parameterType="cn.yidukeji.bean.Department">
+        INSERT INTO department (company_id, parent_id, name, description, ctime)
+        values (#{companyId}, #{parentId}, #{name}, #{description}, #{ctime})
+    </insert>
+
+    <update id="updateDepartment" parameterType="cn.yidukeji.bean.Department">
+        UPDATE department set company_id=#{companyId}, parent_id=#{parentId}, name=#{name}, description=#{description}, ctime=#{ctime}
+        where id=#{id}
+    </update>
+</mapper>
