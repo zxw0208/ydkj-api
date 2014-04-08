@@ -31,4 +31,22 @@ public class AccessUserHolder {
         }
     }
 
+    private static ThreadLocal<AccessUser> tl = new ThreadLocal<AccessUser>();
+
+    public static void setAccessUser(AccessUser User){
+        tl.set(User);
+    }
+
+    public static AccessUser getAccessUser(){
+        return tl.get();
+    }
+
+    public static void removeAccessUser(){
+        tl.remove();
+    }
+
+    public static void clear(){
+        tl.remove();
+    }
+
 }

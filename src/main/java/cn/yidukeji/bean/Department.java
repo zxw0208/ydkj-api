@@ -1,5 +1,7 @@
 package cn.yidukeji.bean;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ZXW
@@ -11,8 +13,10 @@ public class Department {
     private Integer id;
     private Integer companyId;
     private Integer parentId;
-    private Integer name;
-    private Integer description;
+    @NotNull(message = "部门名称不能为空")
+    private String name;
+    @NotNull(message = "部门描述不能为空")
+    private String description;
     private Integer status;
     private Integer ctime;
 
@@ -40,19 +44,19 @@ public class Department {
         this.parentId = parentId;
     }
 
-    public Integer getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(Integer name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public Integer getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(Integer description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 

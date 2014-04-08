@@ -1,6 +1,6 @@
 package cn.yidukeji.core;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -64,24 +64,28 @@ public interface Paginator {
 	 * 是否有上一页
 	 * @return
 	 */
+    @JsonIgnore
 	boolean isHasPre();
 	
 	/**
 	 * 得到上一页的页数
 	 * @return
 	 */
+    @JsonIgnore
     long getPrePage();
 	
 	/**
 	 * 是否有下一页
 	 * @return
 	 */
+    @JsonIgnore
 	boolean isHasNext();
 	
 	/**
 	 * 得到下一页的页数
 	 * @return
 	 */
+    @JsonIgnore
     long getNextPage();
 	
 	/**
@@ -103,12 +107,14 @@ public interface Paginator {
 	 * 从哪一行开始
 	 * @return
 	 */
+    @JsonIgnore
     long getFirstResult();
 	
 	/**
 	 * 共显示多少条
 	 * @return
 	 */
+    @JsonIgnore
     long getMaxResults();
 	
 }

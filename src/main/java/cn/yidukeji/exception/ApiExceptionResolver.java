@@ -1,5 +1,6 @@
 package cn.yidukeji.exception;
 
+import cn.yidukeji.utils.RestResult;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,8 +39,31 @@ public class ApiExceptionResolver extends SimpleMappingExceptionResolver {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        }else if(e instanceof org.springframework.validation.BindException){
+            org.springframework.validation.BindException be = (org.springframework.validation.BindException) e;
+            ApiException ae = new ApiException("[" + be.getFieldError().getField() + "]参数类型不正确", 400);
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(
+                        response.getOutputStream(), JsonEncoding.UTF8);
+
+                mapper.writeValue(jsonGenerator, ae.getError());
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         } else {
             e.printStackTrace();
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(
+                        response.getOutputStream(), JsonEncoding.UTF8);
+
+                mapper.writeValue(jsonGenerator, RestResult.ERROR_500().put("error", "内部错误"));
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
 
         return super.doResolveException(request, response, o, e);

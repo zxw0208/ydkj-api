@@ -17,11 +17,13 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -70,20 +72,35 @@ public class AuthInterceptor implements HandlerInterceptor, InitializingBean {
                 throw new ApiException("请求过期", 401);
             }
         }
-        String temp = "&signature=" + signature;
-        String queryString = request.getQueryString();
-        String signatureStr = queryString.replace(temp, "");
-        String s = HMACUtils.sha265(accessUser.getSecretKey(), signatureStr);
+        //String temp = "&signature=" + signature;
+        //String queryString = request.getQueryString();
+        Enumeration<String> e = request.getParameterNames();
+        Set<String> set = new TreeSet<String>();
+        while (e.hasMoreElements()){
+            String str = e.nextElement();
+            if(!"signature".equals(str)){
+                set.add(str);
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for(String str : set){
+            if(sb.length() > 0){
+                sb.append("&");
+            }
+            sb.append(str).append("=").append(request.getParameter(str));
+        }
+        //String signatureStr = queryString.replace(temp, "");
+        String s = HMACUtils.sha265(accessUser.getSecretKey(), sb.toString());
         if(!signature.equals(s)){
             throw new ApiException("验签失败", 403);
         }
-
+        AccessUserHolder.setAccessUser(accessUser);
         return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object o, ModelAndView modelAndView) throws Exception {
-
+        AccessUserHolder.removeAccessUser();
     }
 
     @Override

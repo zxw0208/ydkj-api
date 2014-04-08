@@ -4,6 +4,7 @@ import cn.yidukeji.bean.Test;
 import cn.yidukeji.interceptor.AccessLevel;
 import cn.yidukeji.utils.RestResult;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -19,7 +20,8 @@ public class TestController {
 
     @RequestMapping("/test")
     @ResponseBody @AccessLevel(2)
-    public RestResult test(){
+    public RestResult test(@RequestBody String ss){
+        System.out.println(ss);
         Test t = new Test();
         t.setT1("111111");
         t.setT2("222222");
