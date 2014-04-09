@@ -15,14 +15,14 @@
     </resultMap>
 
     <select id="findDepartmentList" resultMap="departmentMap">
-        select * from department where company_id = #{companyId}
+        select * from department where company_id = #{companyId} and status = 0
         <if test="first != null">
             LIMIT #{first},#{max}
         </if>
     </select>
 
     <select id="findDepartmentListCount" resultType="int">
-        select count(1) from department where company_id = #{companyId}
+        select count(1) from department where company_id = #{companyId} and status = 0
     </select>
 
     <insert id="insertDepartment" parameterType="cn.yidukeji.bean.Department" useGeneratedKeys="true" keyProperty="id">
@@ -31,12 +31,24 @@
     </insert>
 
     <update id="updateDepartment" parameterType="cn.yidukeji.bean.Department">
-        UPDATE department set company_id=#{companyId}, parent_id=#{parentId}, name=#{name}, description=#{description}, status=#{status}, ctime=#{ctime}
-        where id=#{id}
+        UPDATE department set company_id=#{companyId}
+        <if test="parentId != null">
+          , parent_id=#{parentId}
+        </if>
+        <if test="name != null">
+          , name=#{name}
+        </if>
+        <if test="description != null">
+          , description=#{description}
+        </if>
+        <if test="status != null">
+          , status=#{status}
+        </if>
+        where id=#{id} and company_id=#{companyId} and status = 0
     </update>
 
     <select id="getDepartmentById" resultMap="departmentMap">
-        select * from department where id=#{id}
+        select * from department where id=#{id} and status = 0
         <if test="companyId != null">
             and company_id=#{companyId}
         </if>

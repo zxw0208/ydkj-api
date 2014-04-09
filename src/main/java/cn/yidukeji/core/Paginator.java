@@ -30,13 +30,13 @@ public interface Paginator {
 	 * 当前第几页
 	 * @return 
 	 */
-    long getPageNumber();
+    long getPageNum();
 	
 	/**
 	 * 设置当前转到第几页
-	 * @param pageNumber
+	 * @param pageNum
 	 */
-	void setPageNumber(long pageNumber);
+	void setPageNum(long pageNum);
 	
 	/**
 	 * 设置一页显示多少行

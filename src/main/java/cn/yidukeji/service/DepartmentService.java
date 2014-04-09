@@ -1,6 +1,8 @@
 package cn.yidukeji.service;
 
 import cn.yidukeji.bean.Department;
+import cn.yidukeji.core.Paginator;
+import cn.yidukeji.exception.ApiException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,10 +13,14 @@ import cn.yidukeji.bean.Department;
  */
 public interface DepartmentService {
 
-    public void addDepartment(Department department);
+    public int addDepartment(Department department) throws ApiException;
 
     public Department getDepartmentById(Integer id, Integer companyId);
 
-    public void updateDepartment(Department department);
+    public int updateDepartment(Department department) throws ApiException;
+
+    public int delDepartment(Integer id) throws ApiException;
+
+    public Paginator departmentList(Paginator paginator);
 
 }

@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class DefaultPaginator implements Paginator {
 
-	private long pageNumber = DEFAULT_PAGE_NUMBER;
+	private long pageNum = DEFAULT_PAGE_NUMBER;
 	
 	private long pageSize = DEFAULT_PAGE_SIZE;
 	
@@ -26,20 +26,20 @@ public class DefaultPaginator implements Paginator {
 	@Override
 	public long getNextPage() {
 		if(isHasNext())
-			return pageNumber + 1;
-		return pageNumber;
+			return pageNum + 1;
+		return pageNum;
 	}
 
 	@Override
-	public long getPageNumber() {
-		return this.pageNumber;
+	public long getPageNum() {
+		return this.pageNum;
 	}
 
 	@Override
 	public long getPrePage() {
 		if(isHasPre())
-			return pageNumber - 1;
-		return pageNumber;
+			return pageNum - 1;
+		return pageNum;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -67,21 +67,21 @@ public class DefaultPaginator implements Paginator {
 
 	@Override
 	public boolean isHasNext() {
-		if(pageNumber<getTotalPages())
+		if(pageNum <getTotalPages())
 			return true;
 		return false;
 	}
 
 	@Override
 	public boolean isHasPre() {
-		if(pageNumber>1)
+		if(pageNum >1)
 			return true;
 		return false;
 	}
 
 	@Override
-	public void setPageNumber(long pageNumber) {
-		this.pageNumber = pageNumber;
+	public void setPageNum(long pageNum) {
+		this.pageNum = pageNum;
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class DefaultPaginator implements Paginator {
 
 	@Override
 	public long getFirstResult() {
-        long pageIndex = getPageNumber() - 1;
+        long pageIndex = getPageNum() - 1;
 		if (pageIndex < 0) {
 			pageIndex = 0;
 		}

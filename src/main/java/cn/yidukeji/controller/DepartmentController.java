@@ -33,34 +33,46 @@ public class DepartmentController {
     @ResponseBody
     public RestResult add(Department department) throws ApiException {
         BeanValidation.validate(department);
+        int c = departmentService.addDepartment(department);
+        return RestResult.SUCCESS().put("department", department).put("result", c);
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    @ResponseBody
+    public RestResult update(Department department) throws ApiException {
+        int c = departmentService.updateDepartment(department);
+        return RestResult.SUCCESS().put("result", c);
+    }
+
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
+    @ResponseBody
+    public RestResult get(Integer id){
         AccessUser accessUser = AccessUserHolder.getAccessUser();
-        department.setCompanyId(accessUser.getCompanyId());
-        department.setStatus(0);
-        department.setCtime((int)(System.currentTimeMillis()/1000));
-        if(department.getParentId() == null){
-            department.setParentId(0);
+        if(id == null || id == 0){
+            return RestResult.ERROR_400().put("error", "ID不能为空");
         }
-        if(department.getParentId() > 0){
-            Department d = departmentService.getDepartmentById(department.getParentId(), accessUser.getCompanyId());
-            if(d == null){
-                return RestResult.ERROR_400().put("error", "上级部门不存在");
-            }
-        }
-        departmentService.addDepartment(department);
+        Department department = departmentService.getDepartmentById(id, accessUser.getCompanyId());
         return RestResult.SUCCESS().put("department", department);
     }
 
-    public RestResult update(Department department){
-        if(department.getId() == null){
-            return RestResult.ERROR_400().put("error", "id不能为空");
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public RestResult delete(Integer id) throws ApiException {
+        int c = departmentService.delDepartment(id);
+        return RestResult.SUCCESS().put("result", c);
+    }
+
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @ResponseBody
+    public RestResult list(Integer pageNum, Integer pageSize){
+        Paginator p = new DefaultPaginator();
+        if(pageNum != null){
+            p.setPageNum(pageNum);
         }
-        AccessUser accessUser = AccessUserHolder.getAccessUser();
-        if(department.getParentId() != null && department.getParentId() > 0){
-            Department d = departmentService.getDepartmentById(department.getParentId(), accessUser.getCompanyId());
-            if(d == null){
-                return RestResult.ERROR_400().put("error", "上级部门不存在");
-            }
+        if(pageSize != null){
+            p.setPageSize(pageSize);
         }
-        return RestResult.SUCCESS();
+        Paginator paginator = departmentService.departmentList(p);
+        return RestResult.SUCCESS().put("departmentList", paginator.getResults()).put("page", paginator);
     }
 }
