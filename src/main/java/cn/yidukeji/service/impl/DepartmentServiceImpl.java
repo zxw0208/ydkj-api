@@ -66,6 +66,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             }
         }
         department.setCompanyId(accessUser.getCompanyId());
+        department.setStatus(null);
         return departmentMapper.updateDepartment(department);
     }
 

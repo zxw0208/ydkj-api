@@ -32,6 +32,7 @@ public class DepartmentController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
     public RestResult add(Department department) throws ApiException {
+        department.setId(null);
         BeanValidation.validate(department);
         int c = departmentService.addDepartment(department);
         return RestResult.SUCCESS().put("department", department).put("result", c);

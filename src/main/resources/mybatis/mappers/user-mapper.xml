@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.yidukeji.persistence.UserMapper">
+
+    <resultMap id="userMap" type="cn.yidukeji.bean.User">
+        <id property="id" column="id" />
+        <result property="email" column="email" />
+        <result property="mobile" column="mobile" />
+        <result property="account" column="account" />
+        <result property="role" column="role" />
+        <result property="name" column="name" />
+        <result property="nick" column="nick" />
+        <result property="sex" column="sex" />
+        <result property="job" column="job" />
+        <result property="identification" column="identification" />
+        <result property="address" column="address" />
+        <result property="info" column="info" />
+        <result property="departmentId" column="department_id" />
+        <result property="passwd" column="passwd" />
+        <result property="companyId" column="company_id" />
+        <result property="ctime" column="ctime" />
+        <result property="status" column="status" />
+    </resultMap>
+
+    <select id="findUserList" resultMap="userMap">
+        select * from user where company_id = #{companyId} and status != 3
+        <if test="first != null">
+            LIMIT #{first},#{max}
+        </if>
+    </select>
+
+    <select id="findUserListCount" resultType="int">
+        select count(1) from user where company_id = #{companyId} and status != 3
+    </select>
+
+    <insert id="insertUser" parameterType="cn.yidukeji.bean.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (email, mobile, account, role, name, nick, sex, job, identification, address, info, department_id, passwd, company_id, ctime, status)
+        values (#{email}, #{mobile}, #{account}, #{role}, #{name}, #{nick}, #{sex}, #{job}, #{identification}, #{address}, #{info}, #{departmentId}, #{passwd}, #{companyId}, #{ctime}, #{status})
+    </insert>
+
+    <update id="updateUser" parameterType="cn.yidukeji.bean.User">
+        UPDATE user set company_id=#{companyId}
+        <if test="email != null">
+          , email=#{email}
+        </if>
+        <if test="mobile != null">
+          , mobile=#{mobile}
+        </if>
+        <if test="account != null">
+          , account=#{account}
+        </if>
+        <if test="role != null">
+          , role=#{role}
+        </if>
+        <if test="name != null">
+            , name=#{name}
+        </if>
+        <if test="nick != null">
+            , nick=#{nick}
+        </if>
+        <if test="sex != null">
+            , sex=#{sex}
+        </if>
+        <if test="job != null">
+            , job=#{job}
+        </if>
+        <if test="identification != null">
+            , identification=#{identification}
+        </if>
+        <if test="address != null">
+            , address=#{address}
+        </if>
+        <if test="info != null">
+            , info=#{info}
+        </if>
+        <if test="departmentId != null">
+            , department_id=#{departmentId}
+        </if>
+        <if test="passwd != null">
+            , passwd=#{passwd}
+        </if>
+        <if test="companyId != null">
+            , company_id=#{companyId}
+        </if>
+        <if test="status != null">
+            , status=#{status}
+        </if>
+        where id=#{id} and company_id=#{companyId} and status != 3
+    </update>
+
+    <select id="getUserById" resultMap="userMap">
+        select * from user where id=#{id} and status != 3
+        <if test="companyId != null">
+            and company_id=#{companyId}
+        </if>
+    </select>
+</mapper>
