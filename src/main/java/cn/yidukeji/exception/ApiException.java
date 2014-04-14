@@ -35,4 +35,8 @@ public class ApiException extends Exception {
         values.put("error", getMessage());
         return new RestResult(code, values);
     }
+
+    public int getCode(){
+        return this.code;
+    }
 }

@@ -2,11 +2,14 @@ package cn.yidukeji.controller;
 
 import cn.yidukeji.utils.HMACUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -48,5 +51,34 @@ public class TestControllerTest {
 
         Object code = map.get("code");
         Assert.assertEquals(200, code);
+    }
+
+    @Test
+    public void aa() throws IOException {
+        DefaultHttpClient hc = new DefaultHttpClient();
+        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+        String token = "OPEN API - USER - ACCOUNT";
+        Integer timestamp = (int)(System.currentTimeMillis()/1000);
+        String nonce = String.valueOf((int)(Math.random()*100000));
+        String signature = DigestUtils.md5Hex(token + timestamp + nonce);
+        formparams.add(new BasicNameValuePair("signature", signature));
+        formparams.add(new BasicNameValuePair("timestamp", timestamp.toString()));
+        formparams.add(new BasicNameValuePair("nonce", nonce));
+        formparams.add(new BasicNameValuePair("company_id", "1"));
+        formparams.add(new BasicNameValuePair("department_id", "1"));
+        HttpPost post = new HttpPost("http://business.iuwhy.com/open/user/account.html");
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
+        post.setEntity(entity);
+
+        HttpResponse response = hc.execute(post);
+        HttpEntity entity1 = response.getEntity();
+        String str = EntityUtils.toString(entity1);
+        System.out.println(str);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = mapper.readValue(str, Map.class);
+        Map<String, Object> m = (Map<String, Object>)map.get("status");
+        System.out.println(m.get("errorno"));
+        System.out.println(m.get("errorcode"));
+        System.out.println(map.get("account"));
     }
 }

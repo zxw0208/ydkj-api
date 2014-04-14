@@ -33,7 +33,7 @@ public class ApiExceptionResolver extends SimpleMappingExceptionResolver {
             try {
                 JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(
                         response.getOutputStream(), JsonEncoding.UTF8);
-
+                response.setStatus(exception.getCode());
                 mapper.writeValue(jsonGenerator, exception.getError());
 
             } catch (IOException ex) {
@@ -46,7 +46,7 @@ public class ApiExceptionResolver extends SimpleMappingExceptionResolver {
             try {
                 JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(
                         response.getOutputStream(), JsonEncoding.UTF8);
-
+                response.setStatus(ae.getCode());
                 mapper.writeValue(jsonGenerator, ae.getError());
 
             } catch (IOException ex) {
@@ -58,7 +58,7 @@ public class ApiExceptionResolver extends SimpleMappingExceptionResolver {
             try {
                 JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(
                         response.getOutputStream(), JsonEncoding.UTF8);
-
+                response.setStatus(500);
                 mapper.writeValue(jsonGenerator, RestResult.ERROR_500().put("error", "内部错误"));
 
             } catch (IOException ex) {

@@ -34,15 +34,15 @@ public class UserControllerTest {
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
         formparams.add(new BasicNameValuePair("address", "上海"));
-        formparams.add(new BasicNameValuePair("departmentId", "3"));
+        formparams.add(new BasicNameValuePair("departmentId", "1"));
         formparams.add(new BasicNameValuePair("description", "abc"));
-        formparams.add(new BasicNameValuePair("email", "aaa1@aa.com"));
+        formparams.add(new BasicNameValuePair("email", "aaa3@aa.com"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
 
         formparams.add(new BasicNameValuePair("identification", "360103198602084110"));
         formparams.add(new BasicNameValuePair("info", "asasasasasasas"));
         formparams.add(new BasicNameValuePair("job", "工人"));
-        formparams.add(new BasicNameValuePair("mobile", "13800000002"));
+        formparams.add(new BasicNameValuePair("mobile", "13800000004"));
         formparams.add(new BasicNameValuePair("name", "zhangsan"));
         formparams.add(new BasicNameValuePair("nick", "zhangsan1"));
 

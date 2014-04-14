@@ -10,12 +10,28 @@ import cn.yidukeji.service.DepartmentService;
 import cn.yidukeji.service.UserService;
 import cn.yidukeji.utils.AccessUserHolder;
 import cn.yidukeji.utils.IdCardUtils;
+import cn.yidukeji.utils.PropertiesUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,19 +43,20 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private Logger logger = Logger.getLogger(this.getClass());
+
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
     private DepartmentService departmentService;
 
-    @Override
+    @Override @Transactional
     public int addUser(User user) throws ApiException {
         AccessUser accessUser = AccessUserHolder.getAccessUser();
         user.setCompanyId(accessUser.getCompanyId());
         user.setCtime((int)(System.currentTimeMillis()/1000));
         user.setStatus(0);
-        user.setAccount(generateAccount());
         user.setSex(IdCardUtils.sex(user.getIdentification()));
         if(StringUtils.isNotBlank(user.getPasswd())){
             user.setPasswd(DigestUtils.md5Hex(user.getPasswd()));
@@ -51,21 +68,29 @@ public class UserServiceImpl implements UserService {
         }else if(user.getRole() != 11 && user.getRole() != 10 ){
             user.setRole(11);
         }
-        if(userMapper.isUnique(user.getMobile(), null, null) > 0){
-            throw new ApiException("手机号已存在", 400);
-        }else if(userMapper.isUnique(null, user.getEmail(), null) > 0){
-            throw new ApiException("电子邮件已存在", 400);
-        }else if(userMapper.isUnique(null, null, user.getAccount()) > 0){
-            throw new ApiException("账户号已存在", 400);
-        }
         Department d = departmentService.getDepartmentById(user.getDepartmentId(), accessUser.getCompanyId());
         if(d == null){
             throw new ApiException("部门不存在", 400);
         }
+        if(userMapper.isUnique(user.getMobile(), null, null) > 0){
+            throw new ApiException("手机号已存在", 400);
+        }
+        if(userMapper.isUnique(null, user.getEmail(), null) > 0){
+            throw new ApiException("电子邮件已存在", 400);
+        }
+        try {
+            user.setAccount(generateAccount(accessUser.getCompanyId(), d.getId()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ApiException("用户帐号生成异常，请联系管理员", 500);
+        }
+        if(userMapper.isUnique(null, null, user.getAccount()) > 0){
+            throw new ApiException("账户号已存在", 400);
+        }
         return userMapper.insertUser(user);
     }
 
-    @Override
+    @Override @Transactional
     public int updateUser(User user) throws ApiException {
         if(user.getId() == null){
             throw new ApiException("id不能为空", 400);
@@ -96,7 +121,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.getUserById(userId, companyId);
     }
 
-    @Override
+    @Override @Transactional
     public int delUser(Integer id) throws ApiException {
         if(id == null){
             throw new ApiException("id不能为空", 400);
@@ -119,7 +144,38 @@ public class UserServiceImpl implements UserService {
         return paginator;
     }
 
-    private  String generateAccount(){
-        return String.valueOf(System.currentTimeMillis());
+    private  String generateAccount(Integer companyId, Integer departmentId) throws IOException, ApiException {
+        String url = PropertiesUtils.getProperty("account.generate.api");
+        DefaultHttpClient hc = new DefaultHttpClient();
+        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+        String token = "OPEN API - USER - ACCOUNT";
+        Integer timestamp = (int)(System.currentTimeMillis()/1000);
+        String nonce = String.valueOf((int)(Math.random()*100000));
+        String signature = DigestUtils.md5Hex(token + timestamp + nonce);
+        formparams.add(new BasicNameValuePair("signature", signature));
+        formparams.add(new BasicNameValuePair("timestamp", timestamp.toString()));
+        formparams.add(new BasicNameValuePair("nonce", nonce));
+        formparams.add(new BasicNameValuePair("company_id", companyId.toString()));
+        formparams.add(new BasicNameValuePair("department_id", departmentId.toString()));
+        HttpPost post = new HttpPost(url);
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
+        post.setEntity(entity);
+
+        HttpResponse response = hc.execute(post);
+        if(response.getStatusLine().getStatusCode() != 200){
+            logger.error("公司用户帐号生成 调用接口错误 返回 status：" + response.getStatusLine().getStatusCode());
+            throw new ApiException("生成用户账号错误，请联系管理员", 500);
+        }
+        HttpEntity entity1 = response.getEntity();
+        String str = EntityUtils.toString(entity1);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = mapper.readValue(str, Map.class);
+        Map<String, Object> m = (Map<String, Object>)map.get("status");
+        if(!"0".equals(m.get("errorno").toString())){
+            logger.error("公司用户帐号生成 调用接口错误 errorcode：" + m.get("errorcode"));
+            throw new ApiException("生成用户账号错误，请联系管理员", 500);
+        }
+
+        return map.get("account").toString();
     }
 }
