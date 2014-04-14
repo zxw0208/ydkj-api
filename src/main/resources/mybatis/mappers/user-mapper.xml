@@ -96,4 +96,18 @@
             and company_id=#{companyId}
         </if>
     </select>
+    
+    <select id="isUnique" resultType="int">
+        select count(1) from user where 1=2
+        <if test="mobile != null">
+            or mobile=#{mobile}
+        </if>
+        <if test="account != null">
+            or account = #{account}
+        </if>
+        <if test="email != null">
+            or email = #{email}
+        </if>
+    </select>
+    
 </mapper>

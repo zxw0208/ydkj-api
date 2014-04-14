@@ -9,6 +9,7 @@ import cn.yidukeji.persistence.UserMapper;
 import cn.yidukeji.service.DepartmentService;
 import cn.yidukeji.service.UserService;
 import cn.yidukeji.utils.AccessUserHolder;
+import cn.yidukeji.utils.IdCardUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +38,25 @@ public class UserServiceImpl implements UserService {
         AccessUser accessUser = AccessUserHolder.getAccessUser();
         user.setCompanyId(accessUser.getCompanyId());
         user.setCtime((int)(System.currentTimeMillis()/1000));
-        user.setStatus(1);
+        user.setStatus(0);
         user.setAccount(generateAccount());
+        user.setSex(IdCardUtils.sex(user.getIdentification()));
         if(StringUtils.isNotBlank(user.getPasswd())){
             user.setPasswd(DigestUtils.md5Hex(user.getPasswd()));
+        }else{
+            user.setPasswd(DigestUtils.md5Hex("nopassword"));
         }
         if(user.getRole() == null){
             user.setRole(11);
         }else if(user.getRole() != 11 && user.getRole() != 10 ){
             user.setRole(11);
+        }
+        if(userMapper.isUnique(user.getMobile(), null, null) > 0){
+            throw new ApiException("手机号已存在", 400);
+        }else if(userMapper.isUnique(null, user.getEmail(), null) > 0){
+            throw new ApiException("电子邮件已存在", 400);
+        }else if(userMapper.isUnique(null, null, user.getAccount()) > 0){
+            throw new ApiException("账户号已存在", 400);
         }
         Department d = departmentService.getDepartmentById(user.getDepartmentId(), accessUser.getCompanyId());
         if(d == null){
@@ -60,6 +71,12 @@ public class UserServiceImpl implements UserService {
             throw new ApiException("id不能为空", 400);
         }
         AccessUser accessUser = AccessUserHolder.getAccessUser();
+        User u = getUser(user.getId(), accessUser.getCompanyId());
+        if(user.getMobile() != null && !u.getMobile().equals(user.getMobile()) && userMapper.isUnique(user.getMobile(), null, null) > 0){
+            throw new ApiException("手机号已存在", 400);
+        }else if(user.getEmail() != null && !u.getEmail().equals(user.getEmail()) && userMapper.isUnique(null, user.getEmail(), null) > 0){
+            throw new ApiException("电子邮件已存在", 400);
+        }
         if(user.getDepartmentId() != null){
             Department d = departmentService.getDepartmentById(user.getDepartmentId(), accessUser.getCompanyId());
             if(d == null){

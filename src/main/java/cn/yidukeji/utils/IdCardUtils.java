@@ -181,10 +181,28 @@ public class IdCardUtils {
         return flag;
     }
 
+    public static int sex(String str){
+        if(str.length() == 15){
+            int i = Integer.valueOf(String.valueOf(str.charAt(14)));
+            if(i%2 == 1){
+                return 0;
+            }else{
+                return 1;
+            }
+        }else{
+            int i = Integer.valueOf(String.valueOf(str.charAt(16)));
+            if(i%2 == 1){
+                return 0;
+            }else{
+                return 1;
+            }
+        }
+    }
+
 
 
     public static void main(String[] args) throws ParseException {
         //返回值为""表示正确
-        System.out.println(IdCardUtils.IDCardValidate("dfdsf"));
+        System.out.println(IdCardUtils.sex("360103198602084110"));
     }
 }

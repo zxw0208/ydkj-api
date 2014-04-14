@@ -35,6 +35,7 @@ public class UserController {
     public RestResult add(User user) throws ApiException {
         user.setId(null);
         user.setAccount(null);
+        BeanValidation.validate(user);
         if(!ValidateUtils.emailValidate(user.getEmail())){
             return RestResult.ERROR_400().put("error", "email格式不正确");
         }
@@ -49,12 +50,11 @@ public class UserController {
             e.printStackTrace();
             return RestResult.ERROR_400().put("error", "身份证格式不正确");
         }
-        BeanValidation.validate(user);
         int c = userService.addUser(user);
         return RestResult.SUCCESS().put("user", user).put("result", c);
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
     public RestResult update(User user) throws ApiException {
         user.setAccount(null);

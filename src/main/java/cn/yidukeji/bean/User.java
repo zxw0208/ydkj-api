@@ -11,22 +11,26 @@ import javax.validation.constraints.NotNull;
  */
 public class User {
     private Integer id;
-    @NotNull(message = "email不能为空")
+    @NotNull(message = "EMAIL不能为空")
     private String email;
-    @NotNull(message = "mobile不能为空")
+    @NotNull(message = "手机不能为空")
     private String mobile;
     private String account;
     private Integer role;
-    @NotNull(message = "name不能为空")
+    @NotNull(message = "名字不能为空")
     private String name;
+    @NotNull(message = "昵称不能为空")
     private String nick;
-    private String sex;
+    private Integer sex;
+    @NotNull(message = "工作职位不能为空")
     private String job;
-    @NotNull(message = "identification不能为空")
+    @NotNull(message = "身份证不能为空")
     private String identification;
+    @NotNull(message = "所在地址不能为空")
     private String address;
+    @NotNull(message = "简介描述不能为空")
     private String info;
-    @NotNull(message = "departmentId不能为空")
+    @NotNull(message = "部门ID不能为空")
     private Integer departmentId;
     private String passwd;
     private Integer companyId;
@@ -89,11 +93,11 @@ public class User {
         this.nick = nick;
     }
 
-    public String getSex() {
+    public Integer getSex() {
         return sex;
     }
 
-    public void setSex(String sex) {
+    public void setSex(Integer sex) {
         this.sex = sex;
     }
 
