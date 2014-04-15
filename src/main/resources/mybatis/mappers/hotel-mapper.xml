@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.yidukeji.persistence.HotelMapper">
+
+	<select id="getRooms" resultType="cn.yidukeji.bean.Rooms">
+		SELECT id, hotel_id as hotelId, min_price as minPrice, max_price as maxPrice, data, indexed from rooms where id=#{id}
+	</select>
+
+    <select id="getCtrip" resultType="cn.yidukeji.bean.Hotel">
+        select * from ctrip where id=#{id}
+    </select>
+
+    <select id="getElong" resultType="cn.yidukeji.bean.Hotel">
+        select * from elong where id=#{id}
+    </select>
+
+    <select id="getU17" resultType="cn.yidukeji.bean.Hotel">
+        select * from u17 where id=#{id}
+    </select>
+
+</mapper>

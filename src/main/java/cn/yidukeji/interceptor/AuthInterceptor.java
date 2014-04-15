@@ -51,6 +51,10 @@ public class AuthInterceptor implements HandlerInterceptor, InitializingBean {
         if(accessUser == null){
             throw new ApiException("accessKeyId不存在", 403);
         }
+        String ip = getIpAddr(request);
+        if(!"0".equals(accessUser.getIp()) && !ip.equals(accessUser.getIp())){
+            throw new ApiException("ip异常不允许访问", 403);
+        }
         Integer level = levelMap.get(hm.getMethod());
         if(accessUser.getLevel() < level){
             throw new ApiException("访问权限不足", 403);
@@ -133,5 +137,20 @@ public class AuthInterceptor implements HandlerInterceptor, InitializingBean {
                         }
                     }, ReflectionUtils.USER_DECLARED_METHODS);
         }
+    }
+
+    public static String getIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+
+        return ip;
     }
 }

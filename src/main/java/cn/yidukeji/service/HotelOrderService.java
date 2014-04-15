@@ -1,6 +1,9 @@
 package cn.yidukeji.service;
 
+import cn.yidukeji.bean.Hotel;
+import cn.yidukeji.bean.Rooms;
 import cn.yidukeji.core.Paginator;
+import cn.yidukeji.exception.ApiException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,6 +14,10 @@ import cn.yidukeji.core.Paginator;
  */
 public interface HotelOrderService {
 
-    public Paginator search(String cityName, String startDate, String endDate, Integer priceClass, String keyword, Paginator paginator);
+    public Paginator search(String cityName, String startDate, String endDate, Integer priceClass, String keyword, Paginator paginator) throws ApiException;
+
+    public Rooms getRooms(Integer id);
+
+    public Hotel getHotel(String id);
 
 }
