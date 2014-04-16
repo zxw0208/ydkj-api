@@ -19,6 +19,8 @@ public interface UserService {
 
     public User getUser(Integer userId, Integer companyId);
 
+    public User getUser(String account, Integer companyId);
+
     public int delUser(Integer id) throws ApiException;
 
     public Paginator userList(Paginator paginator);

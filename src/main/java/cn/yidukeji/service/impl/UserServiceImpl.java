@@ -121,6 +121,15 @@ public class UserServiceImpl implements UserService {
         return userMapper.getUserById(userId, companyId);
     }
 
+    @Override
+    public User getUser(String account, Integer companyId) {
+        if(account.indexOf("@") > 0){
+            return userMapper.getUser(companyId, account, null);
+        }else{
+            return userMapper.getUser(companyId, null, account);
+        }
+    }
+
     @Override @Transactional
     public int delUser(Integer id) throws ApiException {
         if(id == null){

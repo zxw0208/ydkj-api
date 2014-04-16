@@ -1,14 +1,17 @@
 package cn.yidukeji.service.impl;
 
-import cn.yidukeji.bean.Hotel;
-import cn.yidukeji.bean.Rooms;
+import cn.yidukeji.bean.*;
 import cn.yidukeji.core.Paginator;
 import cn.yidukeji.exception.ApiException;
 import cn.yidukeji.persistence.HotelMapper;
+import cn.yidukeji.service.DepartmentService;
 import cn.yidukeji.service.HotelOrderService;
 import cn.yidukeji.utils.PropertiesUtils;
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -23,8 +26,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,6 +46,9 @@ public class HotelOrderServiceImpl implements HotelOrderService {
 
     @Autowired
     private HotelMapper hotelMapper;
+
+    @Autowired
+    private DepartmentService departmentService;
 
     @Override
     public Paginator search(String cityName, String startDate, String endDate, Integer priceClass, String keyword, Paginator paginator) throws ApiException {
@@ -81,6 +90,11 @@ public class HotelOrderServiceImpl implements HotelOrderService {
                 throw new ApiException("生成用户账号错误，请联系管理员", 500);
             }
             List<Map<String, Object>> data = (List<Map<String, Object>>)map.get("data");
+            Object t = map.get("total");
+            if(t != null && NumberUtils.isNumber(t.toString())){
+                Long total = Long.valueOf(t.toString());
+                paginator.setTotalCount(total);
+            }
             paginator.setResults(data);
         }catch (IOException e){
             e.printStackTrace();
@@ -90,7 +104,26 @@ public class HotelOrderServiceImpl implements HotelOrderService {
 
     @Override
     public Rooms getRooms(Integer id) {
-        return hotelMapper.getRooms(id);
+        Rooms rooms = hotelMapper.getRooms(id);
+        rooms.setRoomList(new ArrayList<Room>());
+        String data = rooms.getData();
+        String regEx = "(?<=\\[).*(?=\\])";
+        Pattern pat = Pattern.compile(regEx);
+        Matcher mat = pat.matcher(data);
+        while(mat.find()){
+            String str = mat.group();
+            Room room = new Room();
+            String [] args = str.split(",");
+            room.setRoomType(args[0].replaceAll("\"",""));
+            room.setBedType(args[1].replaceAll("\"",""));
+            room.setPrice(Double.valueOf(args[3].replaceAll("\"","")));
+            room.setSettle(getSettle(room.getPrice()));
+            room.setBreakfast(args[4].replaceAll("\"",""));
+            room.setNote(args[5].replaceAll("\"",""));
+            room.setIdentity(args[6].replaceAll("\"",""));
+            rooms.getRoomList().add(room);
+        }
+        return rooms;
     }
 
     @Override
@@ -108,5 +141,87 @@ public class HotelOrderServiceImpl implements HotelOrderService {
             }
         }
         return null;
+    }
+
+    @Override
+    public Ordered placeOrder(Integer goodsId, User user, List<Map<String, String>> clientList, Integer rooms, String startDate, String endDate, Long day, Integer ticket, String roomIdentity) throws ApiException {
+        Ordered order = new Ordered();
+        order.setCompanyId(user.getCompanyId());
+        order.setCategoryId(2);
+        order.setClients(clientList.size());
+        order.setDepartmentId(user.getDepartmentId());
+        order.setGoodsId(goodsId);
+        order.setUserId(user.getId());
+        order.setStatus(0);
+        order.setCtime((int)(System.currentTimeMillis()/1000));
+        Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
+        Rooms rooms1 = getRooms(goodsId);
+        Hotel hotel = getHotel(rooms1.getHotelId());
+        Map<String, Object> hotelMap = new LinkedHashMap<String, Object>();
+        hotelMap.put("name", hotel.getCname());
+        hotelMap.put("address", hotel.getAddress());
+        contentMap.put("hotel", hotelMap);
+        Room room = null;
+        for(Room r : rooms1.getRoomList()){
+            if(roomIdentity.equals(r.getIdentity())){
+                room = r;
+                break;
+            }
+        }
+        if(room == null){
+            throw new ApiException("房型不存在", 400);
+        }
+        Map<String, Object> roomMap = new LinkedHashMap<String, Object>();
+        roomMap.put("name", room.getRoomType());
+        roomMap.put("bed", room.getBedType());
+        roomMap.put("price", room.getPrice());
+        roomMap.put("settle", room.getSettle());
+        roomMap.put("eat", room.getBreakfast());
+        roomMap.put("net", "免费");
+        contentMap.put("room", roomMap);
+        contentMap.put("clients", clientList);
+        contentMap.put("rooms", rooms);
+        contentMap.put("from", startDate);
+        contentMap.put("to", endDate);
+        contentMap.put("days", day);
+        if(ticket == 1){
+            contentMap.put("ticket", "需要发票");
+        }else if(ticket == 0){
+            contentMap.put("ticket", "不需要发票");
+        }
+        Map<String, Object> contactMap = new LinkedHashMap<String, Object>();
+        contactMap.put("name", user.getName());
+        contactMap.put("mobile", user.getMobile());
+        Department department = departmentService.getDepartmentById(user.getDepartmentId(), user.getCompanyId());
+        if(department != null){
+            contactMap.put("depart", department.getName());
+        }
+        contactMap.put("job", user.getJob());
+        order.setTitle(hotel.getCname());
+        order.setSettle(room.getSettle()*day*clientList.size());
+        order.setAmount(room.getPrice()*day*clientList.size());
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String str = mapper.writeValueAsString(contentMap);
+            order.setContent(str);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return order;
+    }
+
+    private Double getSettle(Double price){
+        String rule = PropertiesUtils.getProperty("settle.rule");
+        String[] args = rule.split(";");
+        for(String s : args){
+            String [] ss = s.split(":");
+            double p = Double.parseDouble(ss[0]);
+            double per = Double.parseDouble(ss[1]);
+            double revise = Double.parseDouble(ss[2]);
+            if(price < p || p == 0){
+                return Math.floor(price * per / 100 / revise) * revise;
+            }
+        }
+        return 0d;
     }
 }

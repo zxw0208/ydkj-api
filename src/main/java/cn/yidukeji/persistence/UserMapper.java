@@ -24,6 +24,8 @@ public interface UserMapper {
 
     public User getUserById(@Param("id")Integer id, @Param("companyId")Integer companyId);
 
+    public User getUser(@Param("companyId")Integer companyId, @Param("email")String email, @Param("mobile")String mobile);
+
     public int isUnique(@Param("mobile")String mobile, @Param("email")String email, @Param("account")String account);
 
 }

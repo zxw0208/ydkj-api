@@ -4,6 +4,7 @@ import cn.yidukeji.utils.RestResult;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
@@ -42,6 +43,19 @@ public class ApiExceptionResolver extends SimpleMappingExceptionResolver {
         }else if(e instanceof org.springframework.validation.BindException){
             org.springframework.validation.BindException be = (org.springframework.validation.BindException) e;
             ApiException ae = new ApiException("[" + be.getFieldError().getField() + "]参数类型不正确", 400);
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(
+                        response.getOutputStream(), JsonEncoding.UTF8);
+                response.setStatus(ae.getCode());
+                mapper.writeValue(jsonGenerator, ae.getError());
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }else if(e instanceof MissingServletRequestParameterException){
+            MissingServletRequestParameterException me = (MissingServletRequestParameterException)e;
+            ApiException ae = new ApiException("[" + me.getParameterName() + "]参数不能为空", 400);
             ObjectMapper mapper = new ObjectMapper();
             try {
                 JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(

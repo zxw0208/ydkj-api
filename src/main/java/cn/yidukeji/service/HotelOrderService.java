@@ -1,9 +1,14 @@
 package cn.yidukeji.service;
 
 import cn.yidukeji.bean.Hotel;
+import cn.yidukeji.bean.Ordered;
 import cn.yidukeji.bean.Rooms;
+import cn.yidukeji.bean.User;
 import cn.yidukeji.core.Paginator;
 import cn.yidukeji.exception.ApiException;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,5 +24,7 @@ public interface HotelOrderService {
     public Rooms getRooms(Integer id);
 
     public Hotel getHotel(String id);
+
+    public Ordered placeOrder(Integer goodsId, User user, List<Map<String, String>> clientList, Integer rooms, String startDate, String endDate, Long day, Integer ticket, String roomIdentity) throws ApiException;
 
 }

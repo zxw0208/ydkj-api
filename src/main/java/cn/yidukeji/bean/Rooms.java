@@ -1,5 +1,9 @@
 package cn.yidukeji.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ZXW
@@ -14,6 +18,7 @@ public class Rooms {
     private Double maxPrice;
     private String data;
     private Integer indexed;
+    private List<Room> roomList;
 
     public Integer getId() {
         return id;
@@ -23,6 +28,7 @@ public class Rooms {
         this.id = id;
     }
 
+    @JsonIgnore
     public String getHotelId() {
         return hotelId;
     }
@@ -47,6 +53,7 @@ public class Rooms {
         this.maxPrice = maxPrice;
     }
 
+    @JsonIgnore
     public String getData() {
         return data;
     }
@@ -55,11 +62,20 @@ public class Rooms {
         this.data = data;
     }
 
+    @JsonIgnore
     public Integer getIndexed() {
         return indexed;
     }
 
     public void setIndexed(Integer indexed) {
         this.indexed = indexed;
+    }
+
+    public List<Room> getRoomList() {
+        return roomList;
+    }
+
+    public void setRoomList(List<Room> roomList) {
+        this.roomList = roomList;
     }
 }

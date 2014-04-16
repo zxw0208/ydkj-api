@@ -1,5 +1,7 @@
 package cn.yidukeji.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ZXW
@@ -20,6 +22,7 @@ public class Hotel {
     private Double lat;
     private String images;
 
+    @JsonIgnore
     public Integer getId() {
         return id;
     }
@@ -28,6 +31,7 @@ public class Hotel {
         this.id = id;
     }
 
+    @JsonIgnore
     public Integer getCollected() {
         return collected;
     }
@@ -36,6 +40,7 @@ public class Hotel {
         this.collected = collected;
     }
 
+    @JsonIgnore
     public String getUid() {
         return uid;
     }
