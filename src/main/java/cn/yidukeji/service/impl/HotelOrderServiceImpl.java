@@ -194,7 +194,7 @@ public class HotelOrderServiceImpl implements HotelOrderService {
         contactMap.put("mobile", user.getMobile());
         Department department = departmentService.getDepartmentById(user.getDepartmentId(), user.getCompanyId());
         if(department != null){
-            contactMap.put("depart", department.getName());
+            contactMap.put("department", department.getName());
         }
         contactMap.put("job", user.getJob());
         order.setTitle(hotel.getCname());
