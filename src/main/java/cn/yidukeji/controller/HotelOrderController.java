@@ -84,7 +84,7 @@ public class HotelOrderController {
      * @param ticket 是否需要发票 1需要 0不需要
      * @return
      */
-    @RequestMapping(value = "/place_order", method = RequestMethod.POST)
+    @RequestMapping(value = "/order/place", method = RequestMethod.POST)
     @ResponseBody
     public RestResult placeOrder(@RequestParam(required = true)Integer goodsId, @RequestParam(required = true)String account,
                                  @RequestParam(required = true)String clients, @RequestParam(required = true)Integer rooms,
@@ -118,7 +118,30 @@ public class HotelOrderController {
         long day = (d2.getTime() - d1.getTime())/(3600*24*1000);
         List<Map<String, String>> clientList = clientsAnalyze(clients);
         Ordered ordered = hotelOrderService.placeOrder(goodsId, user, clientList, rooms, startDate, endDate, day, ticket, roomIdentity);
-        return RestResult.SUCCESS().put("ordered", ordered);
+
+        return RestResult.SUCCESS().put("order", ordered);
+    }
+
+    @RequestMapping(value = "/order/get", method = RequestMethod.GET)
+    @ResponseBody
+    public RestResult getOrder(Integer id){
+        AccessUser accessUser = AccessUserHolder.getAccessUser();
+        Ordered ordered = hotelOrderService.getOrderById(id, accessUser.getCompanyId());
+        return RestResult.SUCCESS().put("order", ordered);
+    }
+
+    @RequestMapping(value = "/order/list", method = RequestMethod.GET)
+    @ResponseBody
+    public RestResult orderList(Integer pageNum, Integer pageSize, String startDate, String endDate, Integer status){
+        Paginator p = new DefaultPaginator();
+        if(pageNum != null){
+            p.setPageNum(pageNum);
+        }
+        if(pageSize != null){
+            p.setPageSize(pageSize);
+        }
+        Paginator paginator = hotelOrderService.getOrderList(p);
+        return RestResult.SUCCESS().put("orderList", paginator.getResults()).put("page", paginator);
     }
 
     private List<Map<String, String>> clientsAnalyze(String clients) throws ApiException {

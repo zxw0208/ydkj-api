@@ -27,4 +27,8 @@ public interface HotelOrderService {
 
     public Ordered placeOrder(Integer goodsId, User user, List<Map<String, String>> clientList, Integer rooms, String startDate, String endDate, Long day, Integer ticket, String roomIdentity) throws ApiException;
 
+    public Ordered getOrderById(Integer id, Integer companyId);
+
+    public Paginator getOrderList(Paginator paginator);
+
 }

@@ -4,8 +4,10 @@ import cn.yidukeji.bean.*;
 import cn.yidukeji.core.Paginator;
 import cn.yidukeji.exception.ApiException;
 import cn.yidukeji.persistence.HotelMapper;
+import cn.yidukeji.persistence.OrderedMapper;
 import cn.yidukeji.service.DepartmentService;
 import cn.yidukeji.service.HotelOrderService;
+import cn.yidukeji.utils.AccessUserHolder;
 import cn.yidukeji.utils.PropertiesUtils;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -23,6 +25,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,6 +52,9 @@ public class HotelOrderServiceImpl implements HotelOrderService {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private OrderedMapper orderedMapper;
 
     @Override
     public Paginator search(String cityName, String startDate, String endDate, Integer priceClass, String keyword, Paginator paginator) throws ApiException {
@@ -143,7 +149,7 @@ public class HotelOrderServiceImpl implements HotelOrderService {
         return null;
     }
 
-    @Override
+    @Override @Transactional
     public Ordered placeOrder(Integer goodsId, User user, List<Map<String, String>> clientList, Integer rooms, String startDate, String endDate, Long day, Integer ticket, String roomIdentity) throws ApiException {
         Ordered order = new Ordered();
         order.setCompanyId(user.getCompanyId());
@@ -207,7 +213,23 @@ public class HotelOrderServiceImpl implements HotelOrderService {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        orderedMapper.insertOrder(order);
         return order;
+    }
+
+    @Override
+    public Ordered getOrderById(Integer id, Integer companyId) {
+        return orderedMapper.getOrderById(id, companyId);
+    }
+
+    @Override
+    public Paginator getOrderList(Paginator paginator) {
+        AccessUser accessUser = AccessUserHolder.getAccessUser();
+        List<Ordered> list = orderedMapper.findOrderList(accessUser.getCompanyId(), paginator.getFirstResult(), paginator.getMaxResults());
+        paginator.setResults(list);
+        int count = orderedMapper.findOrderListCount(accessUser.getCompanyId());
+        paginator.setTotalCount(count);
+        return paginator;
     }
 
     private Double getSettle(Double price){
