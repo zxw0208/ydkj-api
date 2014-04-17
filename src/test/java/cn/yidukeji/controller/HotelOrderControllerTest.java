@@ -118,10 +118,35 @@ public class HotelOrderControllerTest {
         DefaultHttpClient hc = new DefaultHttpClient();
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
+
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
+        formparams.add(new BasicNameValuePair("status", "1,2,3,4,5,6"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
         String signature = HMACUtils.sha265("2014", format(formparams));
         formparams.add(new BasicNameValuePair("signature", signature));
         HttpGet post = new HttpGet("http://localhost:8080/ydkj/hotel/order/list?" + URLEncodedUtils.format(formparams, "UTF-8"));
+        HttpResponse response = hc.execute(targetHost, post);
+        HttpEntity entity1 = response.getEntity();
+        String str = EntityUtils.toString(entity1);
+        System.out.println(str);
+    }
+
+    @Test
+    public void cancelOrder() throws Exception {
+        HttpHost targetHost = new HttpHost("localhost", 8080, "http");
+        DefaultHttpClient hc = new DefaultHttpClient();
+        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+        formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
+        formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
+
+        formparams.add(new BasicNameValuePair("id", "24"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
+        String signature = HMACUtils.sha265("2014", URLEncodedUtils.format(formparams, "UTF-8"));
+        formparams.add(new BasicNameValuePair("signature", signature));
+        HttpPost post = new HttpPost("http://localhost:8080/ydkj/hotel/order/cancel");
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
+        post.setEntity(entity);
+
         HttpResponse response = hc.execute(targetHost, post);
         HttpEntity entity1 = response.getEntity();
         String str = EntityUtils.toString(entity1);

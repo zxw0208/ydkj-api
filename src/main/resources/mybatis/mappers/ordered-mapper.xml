@@ -22,6 +22,18 @@
 
     <select id="findOrderList" resultMap="orderedMap">
         select * from ordered where company_id = #{companyId}
+        <if test="startDate != null">
+            and ctime >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            and ctime &lt; #{endDate}
+        </if>
+        <if test="keyword != null">
+            and title like "%"#{keyword}"%"
+        </if>
+        <if test="status != null">
+            and status in (${status})
+        </if>
         <if test="first != null">
             LIMIT #{first},#{max}
         </if>
@@ -29,6 +41,18 @@
 
     <select id="findOrderListCount" resultType="int">
         select count(1) from ordered where company_id = #{companyId}
+        <if test="startDate != null">
+            and ctime >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            and ctime &lt; #{endDate}
+        </if>
+        <if test="keyword != null">
+            and title like "%"#{keyword}"%"
+        </if>
+        <if test="status != null">
+            and status in (${status})
+        </if>
     </select>
 
     <insert id="insertOrder" parameterType="cn.yidukeji.bean.Ordered" useGeneratedKeys="true" keyProperty="id">

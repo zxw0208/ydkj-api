@@ -14,9 +14,12 @@ import java.util.List;
  */
 public interface OrderedMapper {
 
-    public List<Ordered> findOrderList(@Param("companyId")Integer companyId, @Param("first")Long first, @Param("max")Long max);
+    public List<Ordered> findOrderList(@Param("startDate")Integer startDate, @Param("endDate")Integer endDate,
+                                       @Param("status")String status, @Param("keyword")String keyword,
+                                       @Param("companyId")Integer companyId, @Param("first")Long first, @Param("max")Long max);
 
-    public int findOrderListCount(Integer companyId);
+    public int findOrderListCount(@Param("startDate")Integer startDate, @Param("endDate")Integer endDate,
+                                  @Param("status")String status, @Param("keyword")String keyword,@Param("companyId")Integer companyId);
 
     public int insertOrder(Ordered ordered);
 

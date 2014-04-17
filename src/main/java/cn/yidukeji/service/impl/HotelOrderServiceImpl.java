@@ -232,13 +232,18 @@ public class HotelOrderServiceImpl implements HotelOrderService {
     }
 
     @Override
-    public Paginator getOrderList(Paginator paginator) {
+    public Paginator getOrderList(Integer startDate, Integer endDate, String status, String keyword, Paginator paginator) {
         AccessUser accessUser = AccessUserHolder.getAccessUser();
-        List<Ordered> list = orderedMapper.findOrderList(accessUser.getCompanyId(), paginator.getFirstResult(), paginator.getMaxResults());
+        List<Ordered> list = orderedMapper.findOrderList(startDate, endDate, status, keyword, accessUser.getCompanyId(), paginator.getFirstResult(), paginator.getMaxResults());
         paginator.setResults(list);
-        int count = orderedMapper.findOrderListCount(accessUser.getCompanyId());
+        int count = orderedMapper.findOrderListCount(startDate, endDate, status, keyword, accessUser.getCompanyId());
         paginator.setTotalCount(count);
         return paginator;
+    }
+
+    @Override
+    public int updateOrder(Ordered order) {
+        return orderedMapper.updateOrder(order);
     }
 
     private Double getSettle(Double price){

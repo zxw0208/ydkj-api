@@ -10,6 +10,7 @@ import cn.yidukeji.utils.AccessUserHolder;
 import cn.yidukeji.utils.DateUtils;
 import cn.yidukeji.utils.RestResult;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -130,9 +131,19 @@ public class HotelOrderController {
         return RestResult.SUCCESS().put("order", ordered);
     }
 
+    /**
+     * 订单查询
+     * @param pageNum 第几页
+     * @param pageSize 一页几条
+     * @param startDate 大于startDate的下单时间
+     * @param endDate 小于endDate的下单时间
+     * @param status 状态 可以添多个，逗号分开 1,2,3
+     * @param keyword 订单 标题 搜索
+     * @return
+     */
     @RequestMapping(value = "/order/list", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
-    public RestResult orderList(Integer pageNum, Integer pageSize, String startDate, String endDate, Integer status){
+    public RestResult orderList(Integer pageNum, Integer pageSize, String startDate, String endDate, String status, String keyword){
         Paginator p = new DefaultPaginator();
         if(pageNum != null){
             p.setPageNum(pageNum);
@@ -140,8 +151,47 @@ public class HotelOrderController {
         if(pageSize != null){
             p.setPageSize(pageSize);
         }
-        Paginator paginator = hotelOrderService.getOrderList(p);
+        Integer d1 = null;
+        if(StringUtils.isNotBlank(startDate)){
+            Date date = DateUtils.parseDate(startDate, "yyyy-MM-dd");
+            if(date == null){
+                return RestResult.ERROR_400().put("error", "日期格式不正确");
+            }
+            d1 = (int)(date.getTime()/1000);
+        }
+        Integer d2 = null;
+        if(StringUtils.isNotBlank(endDate)){
+            Date date = DateUtils.parseDate(endDate, "yyyy-MM-dd");
+            if(date == null){
+                return RestResult.ERROR_400().put("error", "日期格式不正确");
+            }
+            d2 = (int)(date.getTime()/1000);
+        }
+        if(StringUtils.isNotBlank(status)){
+            String [] args = status.split(",");
+            for(String s : args){
+                if(!NumberUtils.isNumber(s)){
+                    return RestResult.ERROR_400().put("error", "status参数填写不正确");
+                }
+            }
+            if(args.length > 10){
+                return RestResult.ERROR_400().put("error", "status参数填写不正确");
+            }
+        }
+        Paginator paginator = hotelOrderService.getOrderList(d1, d2, status, keyword, p);
         return RestResult.SUCCESS().put("orderList", paginator.getResults()).put("page", paginator);
+    }
+
+    @RequestMapping(value = "/order/cancel", method = RequestMethod.POST, params = "version=1.0")
+    @ResponseBody
+    public RestResult cancelOrder(@RequestParam(required = true)Integer id){
+        AccessUser accessUser = AccessUserHolder.getAccessUser();
+        Ordered order = new Ordered();
+        order.setId(id);
+        order.setCompanyId(accessUser.getCompanyId());
+        order.setStatus(5);
+        int c = hotelOrderService.updateOrder(order);
+        return RestResult.SUCCESS().put("result", c);
     }
 
     private List<Map<String, String>> clientsAnalyze(String clients) throws ApiException {

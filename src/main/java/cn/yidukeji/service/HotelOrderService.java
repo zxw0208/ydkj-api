@@ -29,6 +29,8 @@ public interface HotelOrderService {
 
     public Ordered getOrderById(Integer id, Integer companyId);
 
-    public Paginator getOrderList(Paginator paginator);
+    public Paginator getOrderList(Integer startDate, Integer endDate, String status, String keyword, Paginator paginator);
+
+    public int updateOrder(Ordered order);
 
 }
