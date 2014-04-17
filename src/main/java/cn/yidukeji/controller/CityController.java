@@ -24,7 +24,7 @@ public class CityController {
     @Autowired
     private CityService cityService;
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
     public RestResult list(){
         List<String> list = cityService.getCityList();

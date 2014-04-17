@@ -37,7 +37,7 @@ public class HotelOrderController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/search", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
     public RestResult search(String cityName, String startDate, String endDate, Integer priceClass, String keyword, Integer pageNum, Integer pageSize) throws ApiException {
         Paginator p = new DefaultPaginator();
@@ -62,7 +62,7 @@ public class HotelOrderController {
         return RestResult.SUCCESS().put("userList", paginator.getResults()).put("page", paginator);
     }
 
-    @RequestMapping(value = "/info", method = RequestMethod.GET)
+    @RequestMapping(value = "/info", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
     public RestResult hotelInfo(Integer id){
         Rooms rooms = hotelOrderService.getRooms(id);
@@ -84,7 +84,7 @@ public class HotelOrderController {
      * @param ticket 是否需要发票 1需要 0不需要
      * @return
      */
-    @RequestMapping(value = "/order/place", method = RequestMethod.POST)
+    @RequestMapping(value = "/order/place", method = RequestMethod.POST, params = "version=1.0")
     @ResponseBody
     public RestResult placeOrder(@RequestParam(required = true)Integer goodsId, @RequestParam(required = true)String account,
                                  @RequestParam(required = true)String clients, @RequestParam(required = true)Integer rooms,
@@ -122,7 +122,7 @@ public class HotelOrderController {
         return RestResult.SUCCESS().put("order", ordered);
     }
 
-    @RequestMapping(value = "/order/get", method = RequestMethod.GET)
+    @RequestMapping(value = "/order/get", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
     public RestResult getOrder(Integer id){
         AccessUser accessUser = AccessUserHolder.getAccessUser();
@@ -130,7 +130,7 @@ public class HotelOrderController {
         return RestResult.SUCCESS().put("order", ordered);
     }
 
-    @RequestMapping(value = "/order/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/order/list", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
     public RestResult orderList(Integer pageNum, Integer pageSize, String startDate, String endDate, Integer status){
         Paginator p = new DefaultPaginator();

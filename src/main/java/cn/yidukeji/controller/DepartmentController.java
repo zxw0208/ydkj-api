@@ -29,7 +29,7 @@ public class DepartmentController {
     @Autowired
     private DepartmentService departmentService;
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST, params = "version=1.0")
     @ResponseBody
     public RestResult add(Department department) throws ApiException {
         department.setId(null);
@@ -38,14 +38,14 @@ public class DepartmentController {
         return RestResult.SUCCESS().put("department", department).put("result", c);
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    @RequestMapping(value = "/update", method = RequestMethod.POST, params = "version=1.0")
     @ResponseBody
     public RestResult update(Department department) throws ApiException {
         int c = departmentService.updateDepartment(department);
         return RestResult.SUCCESS().put("result", c);
     }
 
-    @RequestMapping(value = "/get", method = RequestMethod.GET)
+    @RequestMapping(value = "/get", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
     public RestResult get(Integer id){
         AccessUser accessUser = AccessUserHolder.getAccessUser();
@@ -56,14 +56,14 @@ public class DepartmentController {
         return RestResult.SUCCESS().put("department", department);
     }
 
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/delete", method = RequestMethod.POST, params = "version=1.0")
     @ResponseBody
     public RestResult delete(Integer id) throws ApiException {
         int c = departmentService.delDepartment(id);
         return RestResult.SUCCESS().put("result", c);
     }
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
     public RestResult list(Integer pageNum, Integer pageSize){
         Paginator p = new DefaultPaginator();

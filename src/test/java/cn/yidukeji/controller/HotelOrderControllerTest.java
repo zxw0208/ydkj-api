@@ -80,7 +80,7 @@ public class HotelOrderControllerTest {
         formparams.add(new BasicNameValuePair("roomIdentity", "c227f70597a4381bfb7e18a535028faa:1"));
         formparams.add(new BasicNameValuePair("rooms", "2"));
         formparams.add(new BasicNameValuePair("startDate", "2014-04-18"));
-
+        formparams.add(new BasicNameValuePair("version", "1.0"));
 
         String signature = HMACUtils.sha265("2014", format(formparams));
         formparams.add(new BasicNameValuePair("signature", signature));
@@ -102,6 +102,7 @@ public class HotelOrderControllerTest {
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
         formparams.add(new BasicNameValuePair("id", "24"));
+        formparams.add(new BasicNameValuePair("version", "1.1"));
         String signature = HMACUtils.sha265("2014", format(formparams));
         formparams.add(new BasicNameValuePair("signature", signature));
         HttpGet post = new HttpGet("http://localhost:8080/ydkj/hotel/order/get?" + URLEncodedUtils.format(formparams, "UTF-8"));

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.yidukeji.persistence.CategoryMapper">
+
+	<select id="getCategory" resultType="cn.yidukeji.bean.Category">
+		SELECT id, parent_id as parentId, name, unikey, description, status, ctime from category where unikey = #{unikey}
+	</select>
+
+</mapper>

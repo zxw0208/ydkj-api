@@ -45,6 +45,7 @@ public class UserControllerTest {
         formparams.add(new BasicNameValuePair("mobile", "13800000004"));
         formparams.add(new BasicNameValuePair("name", "zhangsan"));
         formparams.add(new BasicNameValuePair("nick", "zhangsan1"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
 
         String signature = HMACUtils.sha265("2014", format(formparams));
         formparams.add(new BasicNameValuePair("signature", signature));
@@ -68,6 +69,7 @@ public class UserControllerTest {
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
 
         formparams.add(new BasicNameValuePair("id", "10"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
 
         String signature = HMACUtils.sha265("2014", format(formparams));
         formparams.add(new BasicNameValuePair("signature", signature));

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
@@ -66,6 +67,31 @@ public class ApiExceptionResolver extends SimpleMappingExceptionResolver {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        } else if(e instanceof UnsatisfiedServletRequestParameterException){
+            UnsatisfiedServletRequestParameterException ue = (UnsatisfiedServletRequestParameterException) e;
+            String[] version = ue.getActualParams().get("version");
+            String con = "";
+            for(String str : ue.getParamConditions()){
+                if(str.contains("version")){
+                    con = str;
+                }
+            }
+            ApiException ae;
+            if(version == null || !version[0].equals(con)){
+                ae = new ApiException("接口版本不正确 [version]", 400);
+            }else{
+                ae = new ApiException("参数不正确", 400);
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(
+                        response.getOutputStream(), JsonEncoding.UTF8);
+                response.setStatus(ae.getCode());
+                mapper.writeValue(jsonGenerator, ae.getError());
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         } else {
             e.printStackTrace();
             ObjectMapper mapper = new ObjectMapper();
@@ -73,7 +99,7 @@ public class ApiExceptionResolver extends SimpleMappingExceptionResolver {
                 JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(
                         response.getOutputStream(), JsonEncoding.UTF8);
                 response.setStatus(500);
-                mapper.writeValue(jsonGenerator, RestResult.ERROR_500().put("error", "内部错误"));
+                mapper.writeValue(jsonGenerator, RestResult.ERROR_500().put("error", "内部错误,请联系管理员"));
 
             } catch (IOException ex) {
                 ex.printStackTrace();

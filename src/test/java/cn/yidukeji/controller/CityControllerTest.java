@@ -33,6 +33,7 @@ public class CityControllerTest {
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
         String signature = HMACUtils.sha265("2014", URLEncodedUtils.format(formparams, HTTP.UTF_8));
         formparams.add(new BasicNameValuePair("signature", signature));
         HttpGet post = new HttpGet("http://localhost:8080/ydkj/city/list?" + URLEncodedUtils.format(formparams, HTTP.UTF_8));

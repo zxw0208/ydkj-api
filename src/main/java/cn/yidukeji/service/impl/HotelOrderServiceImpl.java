@@ -3,6 +3,7 @@ package cn.yidukeji.service.impl;
 import cn.yidukeji.bean.*;
 import cn.yidukeji.core.Paginator;
 import cn.yidukeji.exception.ApiException;
+import cn.yidukeji.persistence.CategoryMapper;
 import cn.yidukeji.persistence.HotelMapper;
 import cn.yidukeji.persistence.OrderedMapper;
 import cn.yidukeji.service.DepartmentService;
@@ -55,6 +56,9 @@ public class HotelOrderServiceImpl implements HotelOrderService {
 
     @Autowired
     private OrderedMapper orderedMapper;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Override
     public Paginator search(String cityName, String startDate, String endDate, Integer priceClass, String keyword, Paginator paginator) throws ApiException {
@@ -153,7 +157,12 @@ public class HotelOrderServiceImpl implements HotelOrderService {
     public Ordered placeOrder(Integer goodsId, User user, List<Map<String, String>> clientList, Integer rooms, String startDate, String endDate, Long day, Integer ticket, String roomIdentity) throws ApiException {
         Ordered order = new Ordered();
         order.setCompanyId(user.getCompanyId());
-        order.setCategoryId(2);
+        Category category = categoryMapper.getCategory("hotel");
+        if(category == null){
+            logger.error("酒店Category不存在");
+            throw new ApiException("内部错误，请联系管理员", 500);
+        }
+        order.setCategoryId(category.getId());
         order.setClients(clientList.size());
         order.setDepartmentId(user.getDepartmentId());
         order.setGoodsId(goodsId);
