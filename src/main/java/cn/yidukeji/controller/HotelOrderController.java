@@ -50,17 +50,17 @@ public class HotelOrderController {
         }
         if(priceClass != null){
             if(priceClass < 0 || priceClass > 7){
-                return RestResult.ERROR_400().put("error", "价格等级在0-7范围内选择 [priceClass]");
+                throw new ApiException("价格等级在0-7范围内选择 [priceClass]", 400);
             }
         }
         if(StringUtils.isNotBlank(startDate) && DateUtils.parseDate(startDate, "yyyy-MM-dd") == null){
-            return RestResult.ERROR_400().put("error", "开始时间格式不正确，正确的格式为yyyy-MM-dd [startDate]");
+            throw new ApiException("开始时间格式不正确，正确的格式为yyyy-MM-dd [startDate]", 400);
         }
         if(StringUtils.isNotBlank(endDate) && DateUtils.parseDate(endDate, "yyyy-MM-dd") == null){
-            return RestResult.ERROR_400().put("error", "结束时间格式不正确，正确的格式为yyyy-MM-dd [endDate]");
+            throw new ApiException("结束时间格式不正确，正确的格式为yyyy-MM-dd [endDate]", 400);
         }
         Paginator paginator = hotelOrderService.search(cityName, startDate, endDate, priceClass, keyword, p);
-        return RestResult.SUCCESS().put("userList", paginator.getResults()).put("page", paginator);
+        return RestResult.SUCCESS().put("hotelList", paginator.getResults()).put("page", paginator);
     }
 
     @RequestMapping(value = "/info", method = RequestMethod.GET, params = "version=1.0")
@@ -92,29 +92,29 @@ public class HotelOrderController {
                                  @RequestParam(required = true)String startDate,@RequestParam(required = true) String endDate,
                                  @RequestParam(defaultValue = "0")Integer ticket, @RequestParam(required = true)String roomIdentity) throws ApiException {
         if(goodsId <= 0){
-            return RestResult.ERROR_400().put("error", "goodsId必须大于0");
+            throw new ApiException("goodsId必须大于0", 400);
         }
         if(rooms <= 0){
-            return RestResult.ERROR_400().put("error", "房间数量必须大于0 [rooms]");
+            throw new ApiException("房间数量必须大于0 [rooms]", 400);
         }
         if(ticket != 1 && ticket != 0){
-            return RestResult.ERROR_400().put("error", "ticket只能是1或0，1表示需要发票，0表示不需要发票");
+            throw new ApiException("ticket只能是1或0，1表示需要发票，0表示不需要发票", 400);
         }
         AccessUser accessUser = AccessUserHolder.getAccessUser();
         User user = userService.getUser(account, accessUser.getCompanyId());
         if(user == null){
-            return RestResult.ERROR_400().put("error", "公司没有该用户帐号");
+            throw new ApiException("公司没有该用户帐号", 400);
         }
         Date d1 = DateUtils.parseDate(startDate, "yyyy-MM-dd");
         Date d2 = DateUtils.parseDate(endDate, "yyyy-MM-dd");
         if(d1 == null || d2 == null){
-            return RestResult.ERROR_400().put("error", "日期格式不正确");
+            throw new ApiException("日期格式不正确", 400);
         }
         if(d1.getTime() <= System.currentTimeMillis()){
-            return RestResult.ERROR_400().put("error", "入住时间不能小于等于今天");
+            throw new ApiException("入住时间不能小于等于今天", 400);
         }
         if(d2.getTime() <= d1.getTime()){
-            return RestResult.ERROR_400().put("error", "离店时间必须大于入住时间");
+            throw new ApiException("离店时间必须大于入住时间", 400);
         }
         long day = (d2.getTime() - d1.getTime())/(3600*24*1000);
         List<Map<String, String>> clientList = clientsAnalyze(clients);
@@ -143,7 +143,7 @@ public class HotelOrderController {
      */
     @RequestMapping(value = "/order/list", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
-    public RestResult orderList(Integer pageNum, Integer pageSize, String startDate, String endDate, String status, String keyword){
+    public RestResult orderList(Integer pageNum, Integer pageSize, String startDate, String endDate, String status, String keyword) throws ApiException {
         Paginator p = new DefaultPaginator();
         if(pageNum != null){
             p.setPageNum(pageNum);
@@ -155,7 +155,7 @@ public class HotelOrderController {
         if(StringUtils.isNotBlank(startDate)){
             Date date = DateUtils.parseDate(startDate, "yyyy-MM-dd");
             if(date == null){
-                return RestResult.ERROR_400().put("error", "日期格式不正确");
+                throw new ApiException("日期格式不正确", 400);
             }
             d1 = (int)(date.getTime()/1000);
         }
@@ -163,7 +163,7 @@ public class HotelOrderController {
         if(StringUtils.isNotBlank(endDate)){
             Date date = DateUtils.parseDate(endDate, "yyyy-MM-dd");
             if(date == null){
-                return RestResult.ERROR_400().put("error", "日期格式不正确");
+                throw new ApiException("日期格式不正确", 400);
             }
             d2 = (int)(date.getTime()/1000);
         }
@@ -171,11 +171,11 @@ public class HotelOrderController {
             String [] args = status.split(",");
             for(String s : args){
                 if(!NumberUtils.isNumber(s)){
-                    return RestResult.ERROR_400().put("error", "status参数填写不正确");
+                    throw new ApiException("status参数填写不正确", 400);
                 }
             }
             if(args.length > 10){
-                return RestResult.ERROR_400().put("error", "status参数填写不正确");
+                throw new ApiException("status参数填写不正确", 400);
             }
         }
         Paginator paginator = hotelOrderService.getOrderList(d1, d2, status, keyword, p);

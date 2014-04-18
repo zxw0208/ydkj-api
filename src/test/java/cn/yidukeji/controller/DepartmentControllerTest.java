@@ -38,7 +38,8 @@ public class DepartmentControllerTest {
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
 
         formparams.add(new BasicNameValuePair("name", "abc"));
-        formparams.add(new BasicNameValuePair("parentId", "3"));
+        formparams.add(new BasicNameValuePair("parentId", "4"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
         String signature = HMACUtils.sha265("2014", URLEncodedUtils.format(formparams, "UTF-8"));
         formparams.add(new BasicNameValuePair("signature", signature));
         HttpPost post = new HttpPost("http://localhost:8080/ydkj/department/add");
@@ -120,6 +121,7 @@ public class DepartmentControllerTest {
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
         //formparams.add(new BasicNameValuePair("id", "3"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
         String signature = HMACUtils.sha265("2014", URLEncodedUtils.format(formparams, HTTP.UTF_8));
         formparams.add(new BasicNameValuePair("signature", signature));
         HttpGet post = new HttpGet("http://localhost:8080/ydkj/department/list?" + URLEncodedUtils.format(formparams, HTTP.UTF_8));

@@ -36,13 +36,13 @@ public class UserControllerTest {
         formparams.add(new BasicNameValuePair("address", "上海"));
         formparams.add(new BasicNameValuePair("departmentId", "1"));
         formparams.add(new BasicNameValuePair("description", "abc"));
-        formparams.add(new BasicNameValuePair("email", "aaa3@aa.com"));
+        formparams.add(new BasicNameValuePair("email", "aaa4@aa.com"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
 
         formparams.add(new BasicNameValuePair("identification", "360103198602084110"));
         formparams.add(new BasicNameValuePair("info", "asasasasasasas"));
         formparams.add(new BasicNameValuePair("job", "工人"));
-        formparams.add(new BasicNameValuePair("mobile", "13800000004"));
+        formparams.add(new BasicNameValuePair("mobile", "13800000005"));
         formparams.add(new BasicNameValuePair("name", "zhangsan"));
         formparams.add(new BasicNameValuePair("nick", "zhangsan1"));
         formparams.add(new BasicNameValuePair("version", "1.0"));
@@ -65,10 +65,10 @@ public class UserControllerTest {
         DefaultHttpClient hc = new DefaultHttpClient();
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
-        formparams.add(new BasicNameValuePair("email", "aaaaa1@aaa.cn"));
+        formparams.add(new BasicNameValuePair("email", "aaaaa2@aaa.cn"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
 
-        formparams.add(new BasicNameValuePair("id", "10"));
+        formparams.add(new BasicNameValuePair("id", "9"));
         formparams.add(new BasicNameValuePair("version", "1.0"));
 
         String signature = HMACUtils.sha265("2014", format(formparams));
@@ -111,7 +111,8 @@ public class UserControllerTest {
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
-        formparams.add(new BasicNameValuePair("id", "9"));
+        formparams.add(new BasicNameValuePair("id", "10"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
         String signature = HMACUtils.sha265("2014", URLEncodedUtils.format(formparams, HTTP.UTF_8));
         formparams.add(new BasicNameValuePair("signature", signature));
         HttpGet post = new HttpGet("http://localhost:8080/ydkj/user/get?" + URLEncodedUtils.format(formparams, HTTP.UTF_8));
@@ -128,7 +129,9 @@ public class UserControllerTest {
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
-        //formparams.add(new BasicNameValuePair("id", "3"));
+        formparams.add(new BasicNameValuePair("pageNum", "3"));
+        formparams.add(new BasicNameValuePair("pageSize", "2"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
         String signature = HMACUtils.sha265("2014", URLEncodedUtils.format(formparams, HTTP.UTF_8));
         formparams.add(new BasicNameValuePair("signature", signature));
         HttpGet post = new HttpGet("http://localhost:8080/ydkj/user/list?" + URLEncodedUtils.format(formparams, HTTP.UTF_8));

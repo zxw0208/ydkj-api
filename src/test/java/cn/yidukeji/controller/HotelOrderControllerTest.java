@@ -36,9 +36,10 @@ public class HotelOrderControllerTest {
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
 
         formparams.add(new BasicNameValuePair("cityName", "上海"));
-        formparams.add(new BasicNameValuePair("endDate", "2014-04-17"));
+        formparams.add(new BasicNameValuePair("endDate", "2014-04-20"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
-        formparams.add(new BasicNameValuePair("startDate", "2014-04-16"));
+        formparams.add(new BasicNameValuePair("startDate", "2014-04-19"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
 
         String signature = HMACUtils.sha265("2014", format(formparams));
         formparams.add(new BasicNameValuePair("signature", signature));
@@ -57,6 +58,7 @@ public class HotelOrderControllerTest {
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
         formparams.add(new BasicNameValuePair("id", "1"));
+        formparams.add(new BasicNameValuePair("version", "1.0"));
         String signature = HMACUtils.sha265("2014", format(formparams));
         formparams.add(new BasicNameValuePair("signature", signature));
         HttpGet post = new HttpGet("http://localhost:8080/ydkj/hotel/info?" + URLEncodedUtils.format(formparams, "UTF-8"));
@@ -74,12 +76,12 @@ public class HotelOrderControllerTest {
         formparams.add(new BasicNameValuePair("accessKeyId", "aaa"));
         formparams.add(new BasicNameValuePair("account", "13800000000"));
         formparams.add(new BasicNameValuePair("clients", "aaa:138001,bbb:138002:bbb:bbbbb"));
-        formparams.add(new BasicNameValuePair("endDate", "2014-04-19"));
+        formparams.add(new BasicNameValuePair("endDate", "2014-04-21"));
         formparams.add(new BasicNameValuePair("expires", String.valueOf(System.currentTimeMillis()/1000)));
         formparams.add(new BasicNameValuePair("goodsId", "1"));
         formparams.add(new BasicNameValuePair("roomIdentity", "c227f70597a4381bfb7e18a535028faa:1"));
         formparams.add(new BasicNameValuePair("rooms", "2"));
-        formparams.add(new BasicNameValuePair("startDate", "2014-04-18"));
+        formparams.add(new BasicNameValuePair("startDate", "2014-04-20"));
         formparams.add(new BasicNameValuePair("version", "1.0"));
 
         String signature = HMACUtils.sha265("2014", format(formparams));

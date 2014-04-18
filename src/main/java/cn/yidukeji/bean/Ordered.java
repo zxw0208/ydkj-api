@@ -1,5 +1,11 @@
 package cn.yidukeji.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ZXW
@@ -102,7 +108,8 @@ public class Ordered {
         this.clients = clients;
     }
 
-    public String getContent() {
+    @JsonIgnore
+    public String getContentStr() {
         return content;
     }
 
@@ -124,5 +131,16 @@ public class Ordered {
 
     public void setCtime(Integer ctime) {
         this.ctime = ctime;
+    }
+
+    public Map<String, Object> getContent(){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Map<String, Object> map = mapper.readValue(content, Map.class);
+            return map;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

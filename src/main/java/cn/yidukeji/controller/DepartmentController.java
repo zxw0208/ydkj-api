@@ -47,10 +47,10 @@ public class DepartmentController {
 
     @RequestMapping(value = "/get", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
-    public RestResult get(Integer id){
+    public RestResult get(Integer id) throws ApiException {
         AccessUser accessUser = AccessUserHolder.getAccessUser();
         if(id == null || id == 0){
-            return RestResult.ERROR_400().put("error", "ID不能为空");
+            throw new ApiException("ID不能为空", 400);
         }
         Department department = departmentService.getDepartmentById(id, accessUser.getCompanyId());
         return RestResult.SUCCESS().put("department", department);

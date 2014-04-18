@@ -1,5 +1,7 @@
 package cn.yidukeji.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -141,6 +143,7 @@ public class User {
         this.departmentId = departmentId;
     }
 
+    @JsonIgnore
     public String getPasswd() {
         return passwd;
     }

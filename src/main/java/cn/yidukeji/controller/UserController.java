@@ -37,18 +37,18 @@ public class UserController {
         user.setAccount(null);
         BeanValidation.validate(user);
         if(!ValidateUtils.emailValidate(user.getEmail())){
-            return RestResult.ERROR_400().put("error", "email格式不正确");
+            throw new ApiException("email格式不正确", 400);
         }
         if(!ValidateUtils.mobileValidate(user.getMobile())){
-            return RestResult.ERROR_400().put("error", "手机格式不正确");
+            throw new ApiException("手机格式不正确", 400);
         }
         try {
             if(StringUtils.isNotBlank(IdCardUtils.IDCardValidate(user.getIdentification()))){
-                return RestResult.ERROR_400().put("error", "身份证格式不正确");
+                throw new ApiException("身份证格式不正确", 400);
             }
         } catch (ParseException e) {
             e.printStackTrace();
-            return RestResult.ERROR_400().put("error", "身份证格式不正确");
+            throw new ApiException("身份证格式不正确", 400);
         }
         int c = userService.addUser(user);
         return RestResult.SUCCESS().put("user", user).put("result", c);
@@ -59,18 +59,18 @@ public class UserController {
     public RestResult update(User user) throws ApiException {
         user.setAccount(null);
         if(StringUtils.isNotBlank(user.getEmail()) && !ValidateUtils.emailValidate(user.getEmail())){
-            return RestResult.ERROR_400().put("error", "email格式不正确");
+            throw new ApiException("email格式不正确", 400);
         }
         if(StringUtils.isNotBlank(user.getMobile()) && !ValidateUtils.mobileValidate(user.getMobile())){
-            return RestResult.ERROR_400().put("error", "手机格式不正确");
+            throw new ApiException("手机格式不正确", 400);
         }
         try {
             if(StringUtils.isNotBlank(user.getIdentification()) && StringUtils.isNotBlank(IdCardUtils.IDCardValidate(user.getIdentification()))){
-                return RestResult.ERROR_400().put("error", "身份证格式不正确");
+                throw new ApiException("身份证格式不正确", 400);
             }
         } catch (ParseException e) {
             e.printStackTrace();
-            return RestResult.ERROR_400().put("error", "身份证格式不正确");
+            throw new ApiException("身份证格式不正确", 400);
         }
         int c = userService.updateUser(user);
         return RestResult.SUCCESS().put("result", c);
@@ -78,10 +78,10 @@ public class UserController {
 
     @RequestMapping(value = "/get", method = RequestMethod.GET, params = "version=1.0")
     @ResponseBody
-    public RestResult get(Integer id){
+    public RestResult get(Integer id) throws ApiException {
         AccessUser accessUser = AccessUserHolder.getAccessUser();
         if(id == null || id == 0){
-            return RestResult.ERROR_400().put("error", "ID不能为空");
+            throw new ApiException("ID不能为空", 400);
         }
         User user = userService.getUser(id, accessUser.getCompanyId());
         return RestResult.SUCCESS().put("user", user);

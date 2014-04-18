@@ -97,10 +97,16 @@ public class UserServiceImpl implements UserService {
         }
         AccessUser accessUser = AccessUserHolder.getAccessUser();
         User u = getUser(user.getId(), accessUser.getCompanyId());
+        if(u == null){
+            throw new ApiException("用户不存在", 400);
+        }
         if(user.getMobile() != null && !u.getMobile().equals(user.getMobile()) && userMapper.isUnique(user.getMobile(), null, null) > 0){
             throw new ApiException("手机号已存在", 400);
         }else if(user.getEmail() != null && !u.getEmail().equals(user.getEmail()) && userMapper.isUnique(null, user.getEmail(), null) > 0){
             throw new ApiException("电子邮件已存在", 400);
+        }
+        if(StringUtils.isNotBlank(user.getIdentification())){
+            user.setSex(IdCardUtils.sex(user.getIdentification()));
         }
         if(user.getDepartmentId() != null){
             Department d = departmentService.getDepartmentById(user.getDepartmentId(), accessUser.getCompanyId());
