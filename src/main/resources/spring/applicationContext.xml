@@ -51,4 +51,10 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
+    <bean id="jedisService" class="cn.yidukeji.core.JedisServiceImpl">
+        <property name="host" value="${redis.host}"/>
+        <property name="port" value="${redis.port}"/>
+        <property name="db"  value="${redis.db}"/>
+    </bean>
+
 </beans>

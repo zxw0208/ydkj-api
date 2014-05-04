@@ -2,6 +2,7 @@ package cn.yidukeji.interceptor;
 
 import cn.yidukeji.bean.AccessUser;
 import cn.yidukeji.exception.ApiException;
+import cn.yidukeji.service.LoggerService;
 import cn.yidukeji.utils.AccessUserHolder;
 import cn.yidukeji.utils.HMACUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -99,6 +100,8 @@ public class AuthInterceptor implements HandlerInterceptor, InitializingBean {
             throw new ApiException("验签失败", 403);
         }
         AccessUserHolder.setAccessUser(accessUser);
+        LoggerService loggerService = applicationContext.getBean(LoggerService.class);
+        loggerService.addAccessLog(System.currentTimeMillis()/1000, hm.getMethod().getName(), hm.getBeanType().getName(), request.getMethod(), sb.toString(), accessUser.getId());
         return true;
     }
 

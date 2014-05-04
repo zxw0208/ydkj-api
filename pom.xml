@@ -149,6 +149,15 @@
             <version>5.0.1.Final</version>
         </dependency>
         <!-- end validation -->
+        <!-- redis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.4.2</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <!-- end redis -->
     </dependencies>
     <build>
         <finalName>ydkj-api</finalName>

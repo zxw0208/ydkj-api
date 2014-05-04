@@ -23,4 +23,9 @@ public class DateUtils {
         return null;
     }
 
+    public static String formatDate(Date date, String pattern){
+        SimpleDateFormat df = new SimpleDateFormat(pattern);
+        return df.format(date);
+    }
+
 }
